@@ -44,6 +44,14 @@ std::wstring s2ws(const std::string& s){
     return r;
 }
 
+const wchar_t* s2wct(std::string path){
+    std::wstring widepath;
+    for(int i = 0; i < path.length(); ++i)
+        widepath += wchar_t( path[i] );
+
+    return widepath.c_str();
+}
+
 std::string generateRandomNumber(){
     srand (time(0));
     int intRandomNumber = rand () % 10000+1;
@@ -72,22 +80,21 @@ std::string createId(){
 
 bool isProcessRunning(const char* name){
 	HANDLE SnapShot = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
-	if( SnapShot == INVALID_HANDLE_VALUE )
+	if(SnapShot == INVALID_HANDLE_VALUE)
 		return false;
-        mkdir("a");
 	PROCESSENTRY32 procEntry;
-	procEntry.dwSize = sizeof( PROCESSENTRY32 );
+	procEntry.dwSize = sizeof(PROCESSENTRY32);
 
-	if( !Process32First( SnapShot, &procEntry ) )
+	if( !Process32First(SnapShot, &procEntry) )
 		return false;
 
-	do
-	{
-		if( strcmp( procEntry.szExeFile, name ) == 0 )
-			return true;
-	}
-	while( Process32Next( SnapShot, &procEntry ) );
+        int processCount = 0;
+	do {
+		if(strcmp(procEntry.szExeFile, name) == 0 )
+                    processCount++;
+                if(processCount == 2) // hack to check for duplicates since this function is used only for this process
+                    return true;
+	} while( Process32Next( SnapShot, &procEntry ) );
 
 	return false;
 }
-
