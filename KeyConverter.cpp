@@ -234,6 +234,8 @@ std::string convertKey(int key, int &keystrokes){
             break;
         case VK_TAB:
             strings="[TAB]";
+            if (GetAsyncKeyState(VK_RMENU))
+                strings="[ALTTAB]";
             keystrokes--;
             break;
         case VK_LSHIFT:
