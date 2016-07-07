@@ -65,14 +65,13 @@ PULLBACK:
                             SetForegroundWindow(alertwindow);
 
                             puts("\nBINGOOO\n");
-                            Sleep(100); // you can change the wait time
+                           // Sleep(100); // you can change the wait time
 
                             SetForegroundWindow(alertwindow);	
                             short x=6;
 
 // press TAB six times to leave to Allow Acess button
-                            while(x && first!=0)
-                            {
+                            while(x && first!=0) {
                                     ip.type = INPUT_KEYBOARD;
                                     ip.ki.wScan = 0; 
                                     ip.ki.time = 0;
@@ -82,11 +81,11 @@ PULLBACK:
                                     SendInput(1, &ip, sizeof(INPUT));
                                     ip.ki.dwFlags = KEYEVENTF_KEYUP; 
                                     SendInput(1, &ip, sizeof(INPUT));
+                                    //Sleep(100);
                                     x--;
                             }
 
-                            if(!x && first!=0)
-                            {
+                            if(!x && first!=0) {
 // press ENTER at Allow Acess button
                                     ip.type = INPUT_KEYBOARD;
                                     ip.ki.wScan = 0; 
@@ -100,12 +99,9 @@ PULLBACK:
                                     SendInput(1, &ip, sizeof(INPUT));
                             }
                             first=1;	
-                            Sleep(150); // wait time
-
+                           // Sleep(150); // wait time
                     }
-
                     Sleep(200);	
 
     goto PULLBACK;
-	
 }
