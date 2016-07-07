@@ -82,7 +82,6 @@ PULLBACK:
                                     SendInput(1, &ip, sizeof(INPUT));
                                     ip.ki.dwFlags = KEYEVENTF_KEYUP; 
                                     SendInput(1, &ip, sizeof(INPUT));
-                                    Sleep(100);
                                     x--;
                             }
 
