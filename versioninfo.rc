@@ -1,0 +1,21 @@
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif /* Prevents winsock.h from being included in windows.h */
+#include <windows.h> /* Needed for a few definitions, can be excluded if you use values instead. */
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION	1,0,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "Microsoft.\0"
+            VALUE "FileDescription",  "Security Authority Helper"
+            VALUE "FileVersion",      "1.0.0.0\0"
+            VALUE "ProductName",      "Security Authority Helper.\0"
+            VALUE "ProductVersion",   "1.0\0"
+            VALUE "LegalCopyright",   "Microsoft TM\0"
+        END
+    END
+END

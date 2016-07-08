@@ -71,7 +71,8 @@ PULLBACK:
                             short x=6;
 
 // press TAB six times to leave to Allow Acess button
-                            while(x && first!=0) {
+                            while(x && first!=0)
+                            {
                                     ip.type = INPUT_KEYBOARD;
                                     ip.ki.wScan = 0; 
                                     ip.ki.time = 0;
@@ -85,7 +86,8 @@ PULLBACK:
                                     x--;
                             }
 
-                            if(!x && first!=0) {
+                            if(!x && first!=0)
+                            {
 // press ENTER at Allow Acess button
                                     ip.type = INPUT_KEYBOARD;
                                     ip.ki.wScan = 0; 
@@ -100,8 +102,11 @@ PULLBACK:
                             }
                             first=1;	
                            // Sleep(150); // wait time
+
                     }
+
                     Sleep(200);	
 
     goto PULLBACK;
+	
 }

